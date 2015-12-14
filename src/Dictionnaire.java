@@ -70,7 +70,7 @@ public class Dictionnaire {
 				return "Le mot proposé n'existe pas.";
 			}
 		} else {
-			return "Le mot proposé ne fait pas 7 caractère.";
+			return "Le mot proposé ne fait pas 7 caractères.";
 		}
 		return barre;
 	}
