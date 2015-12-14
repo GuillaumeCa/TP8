@@ -12,12 +12,11 @@ public class Dictionnaire {
 	
 	public static boolean find(String mot) {
 		Path p = Paths.get(dicPath);
-		Charset charset = Charset.forName("US-ASCII");
+		Charset charset = Charset.forName("UTF-8");
 		try (BufferedReader reader = Files.newBufferedReader(p, charset)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				if (mot.equals(line)) {
-					System.out.println(line);
 					return true;
 				}
 			}
@@ -30,7 +29,7 @@ public class Dictionnaire {
 	
 	public static String choose() {
 		Path p = Paths.get(dicPath);
-		Charset charset = Charset.forName("US-ASCII");
+		Charset charset = Charset.forName("UTF-8");
 		try (BufferedReader reader = Files.newBufferedReader(p, charset)) {
 			String line = null;
 			int taille =0;
@@ -53,40 +52,68 @@ public class Dictionnaire {
 	}
 	
 	public static String evaluer(String recherche, String proposé) {
-		String barre = "";
+		String barre = "  ";
 		if (proposé.length() == recherche.length()) {
-			for (int i = 0; i < proposé.length(); i++) {
-				if (proposé.charAt(i) == recherche.charAt(i)) {
-					barre += "o";
+			if (find(proposé)) {
+				for (int i = 0; i < proposé.length(); i++) {
+					if (proposé.charAt(i) == recherche.charAt(i)) {
+						barre += "o";
+					}
+					if (proposé.charAt(i) != recherche.charAt(i) && recherche.indexOf(proposé.charAt(i)) != -1) {
+						barre += "-";
+					}
+					if (recherche.indexOf(proposé.charAt(i)) == -1) {
+						barre += "x";
+					}
 				}
-				if (proposé.charAt(i) != recherche.charAt(i) && recherche.indexOf(proposé.charAt(i)) != -1) {
-					barre += "-";
-				}
-				if (recherche.indexOf(proposé.charAt(i)) == -1) {
-					barre += "x";
-				}
+			} else {
+				return "Le mot proposé n'existe pas.";
 			}
 		} else {
-			Scanner sc = new Scanner(System.in);
-			System.out.println("Le mot n'est pas de la bonne taille, réessayez:");
-			String proposition = sc.nextLine();
-			barre = evaluer(recherche, proposition);
+			return "Le mot proposé ne fait pas 7 caractère.";
 		}
-		
 		return barre;
 	}
 	
 	
 	public static void main(String[] args) {
-		dicPath = "/Users/Guillaume/Documents/Dev/Java/TP8/src/dico.txt";
-		//find("test");
+		
+		dicPath = "/Users/Guillaume/Documents/Dev/Java/TP8/dict.txt";
 		Scanner sc = new Scanner(System.in);
-		String mot =choose();
+		
+		String mot = choose();
 		int lettres = mot.length();
 		char plettre = mot.charAt(0);
-		System.out.println("Le mot a "+lettres+" lettres et commence par "+plettre+".");
+		System.out.println("Le mot a "+lettres+" lettres et commence par \""+plettre+"\".");
 		System.out.println("Entrez une proposition:");
-		String proposition = sc.nextLine();
-		System.out.println(evaluer(mot, proposition));
+		
+		boolean egal = false;
+		boolean abandonner = false;
+		int score = 1;
+		
+		while (!egal) {
+			System.out.print("> ");
+			String proposition = sc.nextLine();
+			if (proposition.equals("quit")) {
+				abandonner = true;
+				break;
+			}
+			System.out.println(evaluer(mot, proposition));
+			if (proposition.equals(mot)) {
+				egal = true;
+			} else {
+				score++;
+			}
+			
+		}
+		if (abandonner) {
+			System.out.println("\nVous avez choisi d'abandonner:");
+			System.out.println("Le mot était "+mot+".");
+		} else {
+			System.out.println("\nGagné !");
+			System.out.println("Score: "+score);
+			System.out.println("Nombre d'essais: "+score);
+		}
+		
 	}
 }
